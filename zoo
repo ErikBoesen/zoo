@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+RED="\e[31m"
+CYAN="\e[36m"
+YELLOW="\e[33m"
+GREEN="\e[32m"
+EULER="\e^(iπ)+1=0"
+RESET="\e[0m"
+
+config="$HOME/.zoo"
+
+function task { printf "${CYAN}$1... ${RESET}"; }
+function succ { printf "${GREEN}success.${RESET}\n"; }
+function warn { printf "${YELLOW}Warning: $1${RESET}\n" >&2; }
+function fail {
+    if [[ "$1" = "" ]]; then
+        printf "${RED}failed.${RESET}\n" >&2
+    else
+        printf "${RED}$1${RESET}\n" >&2
+    fi
+    exit 1
+}
+
+function store_variable {
+    echo -n "${2}=" >> $config
+    if ${3}; then read -sp "${1}: " ${2}; echo ""; else read -p "${1}. " ${2}; fi
+    echo "${!2}" >> $config
+}
+
+if [ ! -f $config ]; then
+    echo "No config file found; generating one for you."
+    touch $config
+    store_variable "SSH host for zoo" "host" false
+else
+    source $config
+fi
+
+# Parse flags
+while :; do
+    case "$1" in
+    submit)
+        submit=true
+        ;;
+    *)
+        fail "Invalid verb."
+        break
+    esac
+
+    shift
+done
