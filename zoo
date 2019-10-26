@@ -35,16 +35,17 @@ else
     source $config
 fi
 
-# Parse flags
-while :; do
-    case "$1" in
-    submit)
-        submit=true
-        ;;
-    *)
-        fail "Invalid verb."
-        break
-    esac
+# Parse verb
+case "$1" in
+submit)
+    submit=true
+    ;;
+*)
+    fail "Invalid verb '$1'. $@"
+    break
+esac
 
-    shift
-done
+
+if [[ $submit = true ]]; then
+    scp
+fi
